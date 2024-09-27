@@ -1,6 +1,7 @@
 package de.akdogan.composenavigation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -30,6 +31,14 @@ import de.akdogan.composenavigation.ui.theme.ComposeNavigationTheme
 class MainActivity : ComponentActivity() {
 
     private val screenConfiguration: MutableState<ScreenConfiguration> = mutableStateOf(ScreenConfiguration.UNKNOWN)
+
+    private val screenConfigController: ScreenConfigController = object : ScreenConfigController {
+        override suspend fun updateConfiguration(update: ScreenConfiguration.() -> ScreenConfiguration) {
+            val config = screenConfiguration.value
+            val newConfig = config.update()
+            screenConfiguration.value = newConfig
+        }
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,17 +76,13 @@ class MainActivity : ComponentActivity() {
                         ) {
                             NavigationComponent(
                                 navHostController = navHostController,
-                                updateScreenConfig = ::updateScreenConfig
+                                screenConfigController = screenConfigController
                             )
                         }
                     }
                 )
             }
         }
-    }
-
-    private fun updateScreenConfig(config: ScreenConfiguration) {
-        screenConfiguration.value = config
     }
 }
 

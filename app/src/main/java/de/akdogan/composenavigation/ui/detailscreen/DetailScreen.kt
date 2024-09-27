@@ -1,5 +1,6 @@
 package de.akdogan.composenavigation.ui.detailscreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import de.akdogan.composenavigation.LocalScreenConfigController
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -43,6 +45,13 @@ fun DetailScreen(
         val infoItem = info
         // todo some loading
         if (infoItem != null) {
+            val screenConfigController = LocalScreenConfigController.current
+            LaunchedEffect(key1 = infoItem.name) {
+                screenConfigController.updateConfiguration {
+                    this@updateConfiguration.copy(title = infoItem.name.take(20))
+                }
+            }
+
             GlideImage(
                 modifier = Modifier
                     .fillMaxWidth()
